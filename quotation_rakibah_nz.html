@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rakibah NZ Enterprise - Quotation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .toolbar {
+            background: #1a1a1a;
+            padding: 15px 20px;
+            text-align: center;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: white;
+            background: #27ae60;
+        }
+
+        .btn:hover {
+            background: #229954;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.4);
+        }
+
+        #quotation-content {
+            padding: 50px;
+            background: white;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .company-name {
+            font-size: 32px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .company-tagline {
+            font-size: 14px;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+
+        .company-details {
+            font-size: 12px;
+            color: #888;
+            line-height: 1.8;
+        }
+
+        .quotation-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .info-content {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .editable-field {
+            background: transparent;
+            border: 1px dashed #ddd;
+            padding: 5px;
+            border-radius: 3px;
+            width: 100%;
+            font-family: inherit;
+            font-size: inherit;
+            transition: all 0.3s;
+        }
+
+        .editable-field:focus {
+            outline: none;
+            border-color: #667eea;
+            background: #f0f3ff;
+        }
+
+        .pdf-mode .editable-field {
+            border: none !important;
+            background: transparent !important;
+            padding: 2px 0 !important;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        .items-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .items-table th {
+            padding: 15px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .items-table tbody tr {
+            border-bottom: 1px solid #eee;
+        }
+
+        .items-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .items-table td {
+            padding: 15px;
+            font-size: 13px;
+        }
+
+        .items-table input {
+            border: 1px dashed #ddd;
+            padding: 8px;
+            border-radius: 3px;
+            width: 100%;
+            font-size: 13px;
+        }
+
+        .items-table input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: #f0f3ff;
+        }
+
+        .pdf-mode .items-table input {
+            border: none !important;
+            background: transparent !important;
+            padding: 8px 2px !important;
+        }
+
+        .total-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            text-align: right;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 40px;
+        }
+
+        .signature-section {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid #eee;
+            text-align: right;
+        }
+
+        .signature-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .signature-line {
+            width: 200px;
+            border-top: 2px solid #667eea;
+            margin: 40px 0 10px auto;
+        }
+
+        .signature-details {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+            transform: scale(1.1);
+        }
+
+        .action-column {
+            text-align: center;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .toolbar, .action-column, .btn-danger {
+                display: none;
+            }
+            .company-nav {
+                display: none !important;
+            }
+            .container {
+                box-shadow: none;
+            }
+            .editable-field {
+                border: none !important;
+                background: transparent !important;
+                padding: 2px 0;
+            }
+            .items-table input {
+                border: none !important;
+                background: transparent !important;
+                padding: 8px 2px;
+            }
+            input[type="date"] {
+                border: none !important;
+                background: transparent !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 0;
+            }
+            
+            #quotation-content {
+                padding: 20px;
+            }
+            
+            .quotation-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .items-table {
+                font-size: 11px;
+            }
+            
+            .items-table th,
+            .items-table td {
+                padding: 8px 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="company-nav" style="background: #34495e; padding: 10px 20px; display: flex; gap: 10px; flex-wrap: wrap; border-bottom: 3px solid #3498db;">
+            <a href="index.html" style="padding: 8px 15px; background: #95a5a6; color: white; text-decoration: none; border-radius: 5px; font-size: 13px; transition: all 0.3s;">🏠 Home</a>
+            <a href="quotation.html" style="padding: 8px 15px; background: #2c3e50; color: white; text-decoration: none; border-radius: 5px; font-size: 13px; transition: all 0.3s;">Rakibah Enterprise</a>
+            <a href="quotation_rakibah_nz.html" style="padding: 8px 15px; background: #3498db; color: white; text-decoration: none; border-radius: 5px; font-size: 13px; font-weight: bold;">Rakibah NZ Enterprise</a>
+            <a href="quotation_napoh_jaya.html" style="padding: 8px 15px; background: #2c3e50; color: white; text-decoration: none; border-radius: 5px; font-size: 13px; transition: all 0.3s;">Napoh Jaya Enterprise</a>
+        </div>
+        <div class="toolbar">
+            <button class="btn" onclick="generatePDF()">Download PDF</button>
+        </div>
+
+        <div id="quotation-content">
+            <div class="header">
+                <div class="company-name">RAKIBAH NZ ENTERPRISE</div>
+                <div class="company-tagline">Mencari Yang Halal Membeli Pada Yang Afdal</div>
+                <div class="company-details">
+                    <input type="text" class="editable-field" id="address1" value="LOT 3808 JALAN KODIANG" placeholder="Address line 1"><br>
+                    <input type="text" class="editable-field" id="address2" value="KG LAMA PADANG SERA" placeholder="Address line 2"><br>
+                    <input type="text" class="editable-field" id="address3" value="06100 KODIANG KEDAH" placeholder="Address line 3"><br>
+                    <input type="text" class="editable-field" id="phone" value="Contact: 014-9034077" placeholder="Phone">
+                </div>
+            </div>
+
+            <div class="quotation-info">
+                <div class="info-box">
+                    <div class="info-title">QUOTATION DATE:</div>
+                    <div class="info-content">
+                        <input type="date" class="editable-field" id="quotation-date" style="width: 100%;">
+                    </div>
+                </div>
+                <div class="info-box">
+                    <div class="info-title">TO:</div>
+                    <div class="info-content">
+                        <input type="text" class="editable-field" id="customer-name" placeholder="Customer Name"><br>
+                        <input type="text" class="editable-field" id="customer-address1" placeholder="Customer Address Line 1"><br>
+                        <input type="text" class="editable-field" id="customer-address2" placeholder="Customer Address Line 2"><br>
+                        <input type="text" class="editable-field" id="customer-address3" placeholder="Customer Address Line 3">
+                    </div>
+                </div>
+            </div>
+
+            <table class="items-table" id="items-table">
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">NO</th>
+                        <th>DESCRIPTION</th>
+                        <th style="width: 80px;">QTY</th>
+                        <th style="width: 120px;">UNIT PRICE</th>
+                        <th style="width: 120px;">TOTAL</th>
+                        <th style="width: 60px;" class="action-column"></th>
+                    </tr>
+                </thead>
+                <tbody id="items-body">
+                    <tr>
+                        <td><input type="text" class="item-code" value="1" placeholder="No"></td>
+                        <td><input type="text" class="item-detail" value="Sample Item" placeholder="Description"></td>
+                        <td><input type="number" class="item-qty" value="1" placeholder="Qty" onchange="calculateTotal()"></td>
+                        <td><input type="number" class="item-price" value="0" placeholder="Price" onchange="calculateTotal()"></td>
+                        <td><input type="text" class="item-total" value="RM0.00" readonly></td>
+                        <td class="action-column"><button class="btn-danger" onclick="removeRow(this)">×</button></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <button class="btn" onclick="addRow()" style="margin: 20px 0;">+ Tambah Item</button>
+
+            <div class="total-section">
+                TOTAL: <span id="grand-total">RM0.00</span>
+            </div>
+
+            <div class="signature-section">
+                <div class="signature-title">Authorized Signature:</div>
+                <div class="signature-line"></div>
+                <div class="signature-details">
+                    <input type="text" class="editable-field" id="issuer-name" value="NORNAJIHAH" placeholder="Name" style="text-align: right;">
+                    <input type="text" class="editable-field" id="issuer-title" value="MANAGER OF RAKIBAH NZ ENTERPRISE" placeholder="Position" style="text-align: right;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        document.getElementById('quotation-date').valueAsDate = new Date();
+
+        function calculateTotal() {
+            const rows = document.querySelectorAll('#items-body tr');
+            let grandTotal = 0;
+
+            rows.forEach(row => {
+                const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+                const price = parseFloat(row.querySelector('.item-price').value) || 0;
+                const total = qty * price;
+                
+                row.querySelector('.item-total').value = `RM${total.toFixed(2)}`;
+                grandTotal += total;
+            });
+
+            document.getElementById('grand-total').textContent = `RM${grandTotal.toFixed(2)}`;
+        }
+
+        function addRow() {
+            const tbody = document.getElementById('items-body');
+            const rowCount = tbody.rows.length + 1;
+            const newRow = tbody.insertRow();
+            
+            newRow.innerHTML = `
+                <td><input type="text" class="item-code" value="${rowCount}" placeholder="No"></td>
+                <td><input type="text" class="item-detail" placeholder="Description"></td>
+                <td><input type="number" class="item-qty" value="1" placeholder="Qty" onchange="calculateTotal()"></td>
+                <td><input type="number" class="item-price" value="0" placeholder="Price" onchange="calculateTotal()"></td>
+                <td><input type="text" class="item-total" value="RM0.00" readonly></td>
+                <td class="action-column"><button class="btn-danger" onclick="removeRow(this)">×</button></td>
+            `;
+            
+            calculateTotal();
+        }
+
+        function removeRow(button) {
+            const row = button.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            calculateTotal();
+        }
+
+        function generatePDF() {
+            const element = document.getElementById('quotation-content');
+            element.classList.add('pdf-mode');
+            
+            const opt = {
+                margin: 10,
+                filename: `Quotation_Rakibah_NZ_${document.getElementById('quotation-date').value || 'draft'}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                element.classList.remove('pdf-mode');
+            });
+        }
+
+        calculateTotal();
+    </script>
+</body>
+</html>
+

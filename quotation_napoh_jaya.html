@@ -1,0 +1,505 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Napoh Jaya Enterprise - Quotation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .toolbar {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            padding: 15px 20px;
+            text-align: center;
+            border-bottom: 4px solid #e74c3c;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: white;
+            background: #27ae60;
+        }
+
+        .btn:hover {
+            background: #229954;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.4);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 15s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .company-name {
+            font-size: 42px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .company-tagline {
+            font-size: 16px;
+            opacity: 0.95;
+            font-weight: 300;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .company-info {
+            background: #f8f9fa;
+            padding: 25px 40px;
+            border-bottom: 3px solid #e74c3c;
+        }
+
+        .company-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            color: #2c3e50;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .detail-item strong {
+            color: #e74c3c;
+            margin-right: 10px;
+            min-width: 80px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .quotation-date {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: inline-block;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .customer-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 5px solid #e74c3c;
+        }
+
+        .customer-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #e74c3c;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .customer-details {
+            color: #2c3e50;
+            line-height: 1.8;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .items-table thead {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        .items-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 1px;
+        }
+
+        .items-table td {
+            padding: 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .items-table tbody tr {
+            transition: all 0.3s;
+        }
+
+        .items-table tbody tr:hover {
+            background: #fff5f5;
+        }
+
+        .total-section {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            font-size: 16px;
+        }
+
+        .grand-total {
+            border-top: 2px solid rgba(255,255,255,0.3);
+            margin-top: 10px;
+            padding-top: 15px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #e74c3c;
+        }
+
+        .signature-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 50px;
+        }
+
+        .signature-box {
+            text-align: center;
+        }
+
+        .signature-line {
+            border-top: 2px solid #e74c3c;
+            margin: 60px 20px 10px;
+        }
+
+        .signature-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-top: 10px;
+        }
+
+        .editable-field {
+            border: none;
+            background: transparent;
+            width: 100%;
+            padding: 5px;
+            font-family: inherit;
+            font-size: inherit;
+            color: inherit;
+        }
+
+        .editable-field:focus {
+            outline: 2px solid #e74c3c;
+            background: rgba(231, 76, 60, 0.05);
+            border-radius: 3px;
+        }
+
+        .items-table input {
+            border: 1px solid #ddd;
+            padding: 8px;
+            border-radius: 3px;
+            width: 100%;
+            font-size: 13px;
+            box-sizing: border-box;
+        }
+
+        .items-table input:focus {
+            outline: none;
+            border-color: #e74c3c;
+            background: #fff5f5;
+        }
+
+        .items-table input[readonly] {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+        }
+
+        input[type="date"] {
+            color: white;
+            font-weight: 600;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+            
+            .items-table {
+                font-size: 12px;
+            }
+            
+            .items-table th,
+            .items-table td {
+                padding: 10px 5px;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+            .toolbar, .action-column, .btn-danger {
+                display: none;
+            }
+            .company-nav {
+                display: none !important;
+            }
+            .items-table input {
+                border: none !important;
+                background: transparent !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="company-nav" style="background: #34495e; padding: 10px 20px; display: flex; gap: 10px; flex-wrap: wrap; border-bottom: 3px solid #e74c3c;">
+            <a href="index.html" style="padding: 8px 15px; background: #95a5a6; color: white; text-decoration: none; border-radius: 5px; font-size: 13px; transition: all 0.3s;">🏠 Home</a>
+            <a href="quotation.html" style="padding: 8px 15px; background: #2c3e50; color: white; text-decoration: none; border-radius: 5px; font-size: 13px; transition: all 0.3s;">Rakibah Enterprise</a>
+            <a href="quotation_rakibah_nz.html" style="padding: 8px 15px; background: #2c3e50; color: white; text-decoration: none; border-radius: 5px; font-size: 13px; transition: all 0.3s;">Rakibah NZ Enterprise</a>
+            <a href="quotation_napoh_jaya.html" style="padding: 8px 15px; background: #e74c3c; color: white; text-decoration: none; border-radius: 5px; font-size: 13px; font-weight: bold;">Napoh Jaya Enterprise</a>
+        </div>
+        <div class="toolbar">
+            <button class="btn" onclick="generatePDF()">Download PDF</button>
+        </div>
+
+        <div id="quotation-content">
+            <div class="header">
+                <div class="company-name">NAPOH JAYA ENTERPRISE</div>
+                <div class="company-tagline">(AS 0319241-A)</div>
+            </div>
+
+            <div class="company-info">
+                <div style="text-align: center; color: #2c3e50; line-height: 1.8;">
+                    <div>CMA 2, KAMPUNG CERROK MOKKAN,</div>
+                    <div>MUKIM HOSBA,</div>
+                    <div>JALAN GUAR NAPAI,</div>
+                    <div>06000 JITRA</div>
+                    <div>KEDAH DARUL AMAN</div>
+                    <div style="margin-top: 10px;">
+                        <strong>Contact:</strong> <input type="text" class="editable-field" id="phone" value="+60 12-345 6789" placeholder="Phone" style="border: none; background: transparent; text-align: center; width: 150px;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <div class="quotation-date">
+                    <strong>QUOTATION DATE:</strong> 
+                    <input type="date" class="editable-field" id="quotation-date" style="width: auto; display: inline-block;">
+                </div>
+
+                <div class="customer-section">
+                    <div class="customer-title">Bill To:</div>
+                    <div class="customer-details">
+                        <div><input type="text" class="editable-field" id="customer-name" value="Customer Name" placeholder="Customer Name" style="font-weight: 600; font-size: 16px; margin-bottom: 10px;"></div>
+                        <div><input type="text" class="editable-field" id="customer-address1" placeholder="Address Line 1"></div>
+                        <div><input type="text" class="editable-field" id="customer-address2" placeholder="Address Line 2"></div>
+                        <div><input type="text" class="editable-field" id="customer-address3" placeholder="City, Postcode"></div>
+                    </div>
+                </div>
+
+                <table class="items-table" id="items-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">NO.</th>
+                            <th>DESCRIPTION</th>
+                            <th style="width: 80px;">QTY</th>
+                            <th style="width: 120px;">UNIT PRICE</th>
+                            <th style="width: 120px;">AMOUNT</th>
+                            <th style="width: 60px;" class="action-column"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="items-body">
+                        <tr>
+                            <td><input type="text" class="item-code" value="1" placeholder="No."></td>
+                            <td><input type="text" class="item-detail" value="Product/Service Description" placeholder="Description"></td>
+                            <td><input type="number" class="item-qty" value="1" placeholder="Qty" onchange="calculateTotal()"></td>
+                            <td><input type="number" class="item-price" value="100" placeholder="Price" onchange="calculateTotal()"></td>
+                            <td><input type="text" class="item-total" value="RM100" readonly></td>
+                            <td class="action-column"><button class="btn-danger" onclick="removeRow(this)">×</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <button class="btn" onclick="addRow()" style="margin-bottom: 20px;">+ Tambah Item</button>
+
+                <div class="total-section">
+                    <div class="total-row">
+                        <span>Subtotal:</span>
+                        <span id="subtotal">RM100</span>
+                    </div>
+                    <div class="total-row">
+                        <span>Tax (6%):</span>
+                        <span id="tax">RM6</span>
+                    </div>
+                    <div class="total-row grand-total">
+                        <span>GRAND TOTAL:</span>
+                        <span id="grand-total">RM106</span>
+                    </div>
+                </div>
+
+                <div class="signature-section">
+                    <div class="signature-box" style="margin: 0 auto; text-align: center;">
+                        <div style="font-family: 'Brush Script MT', cursive; font-size: 36px; color: #2c3e50; margin-bottom: 10px;">Tan Wei Liang</div>
+                        <div class="signature-line"></div>
+                        <div class="signature-title" style="margin-top: 10px;">
+                            <input type="text" class="editable-field" id="issuer-name" value="TAN WEI LIANG" placeholder="Name" style="text-align: center; font-weight: 600;">
+                        </div>
+                        <div style="font-size: 12px; color: #7f8c8d; margin-top: 5px;">
+                            <input type="text" class="editable-field" id="issuer-title" value="MANAGER - NAPOH JAYA ENTERPRISE" placeholder="Title" style="text-align: center;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        // Set today's date
+        document.getElementById('quotation-date').valueAsDate = new Date();
+
+        function calculateTotal() {
+            let subtotal = 0;
+            const rows = document.querySelectorAll('#items-body tr');
+            
+            rows.forEach(row => {
+                const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+                const price = parseFloat(row.querySelector('.item-price').value) || 0;
+                const total = qty * price;
+                
+                row.querySelector('.item-total').value = 'RM' + total.toFixed(2);
+                subtotal += total;
+            });
+
+            const tax = subtotal * 0.06;
+            const grandTotal = subtotal + tax;
+
+            document.getElementById('subtotal').textContent = 'RM' + subtotal.toFixed(2);
+            document.getElementById('tax').textContent = 'RM' + tax.toFixed(2);
+            document.getElementById('grand-total').textContent = 'RM' + grandTotal.toFixed(2);
+        }
+
+        function addRow() {
+            const tbody = document.getElementById('items-body');
+            const rowCount = tbody.rows.length + 1;
+            const newRow = tbody.insertRow();
+            
+            newRow.innerHTML = `
+                <td><input type="text" class="item-code" value="${rowCount}" placeholder="No."></td>
+                <td><input type="text" class="item-detail" placeholder="Description"></td>
+                <td><input type="number" class="item-qty" value="1" placeholder="Qty" onchange="calculateTotal()"></td>
+                <td><input type="number" class="item-price" value="0" placeholder="Price" onchange="calculateTotal()"></td>
+                <td><input type="text" class="item-total" value="RM0" readonly></td>
+                <td class="action-column"><button class="btn-danger" onclick="removeRow(this)">×</button></td>
+            `;
+            
+            calculateTotal();
+        }
+
+        function removeRow(button) {
+            const row = button.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            calculateTotal();
+        }
+
+        function generatePDF() {
+            const element = document.getElementById('quotation-content');
+            const opt = {
+                margin: 10,
+                filename: `Quotation_Napoh_Jaya_${document.getElementById('quotation-date').value || 'draft'}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            html2pdf().set(opt).from(element).save();
+        }
+
+        // Calculate initial total
+        calculateTotal();
+    </script>
+</body>
+</html>
