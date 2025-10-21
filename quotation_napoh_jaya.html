@@ -316,12 +316,17 @@
                 background: white;
                 padding: 0;
             }
+            /* Slight scale down to ensure 10 rows fit on one page */
+            #quotation-content {
+                transform: scale(0.92);
+                transform-origin: top left;
+            }
             .container {
                 box-shadow: none;
                 border-radius: 0;
             }
-            .toolbar, .action-column, .btn-danger {
-                display: none;
+            .toolbar, .action-column, .btn-danger, .add-item-btn {
+                display: none !important;
             }
             .company-nav {
                 display: none !important;
@@ -329,6 +334,86 @@
             .items-table input {
                 border: none !important;
                 background: transparent !important;
+            }
+            /* Compact layout to fit 10 rows on one page */
+            .header {
+                padding: 10px !important;
+            }
+            .company-name {
+                font-size: 20px !important;
+                margin-bottom: 3px !important;
+            }
+            .company-tagline {
+                font-size: 9px !important;
+            }
+            .company-info {
+                padding: 8px 10px !important;
+                font-size: 9px !important;
+                line-height: 1.2 !important;
+            }
+            .content {
+                padding: 10px !important;
+            }
+            .quotation-date {
+                padding: 5px 10px !important;
+                margin-bottom: 8px !important;
+                font-size: 11px !important;
+            }
+            .customer-section {
+                padding: 8px !important;
+                margin-bottom: 8px !important;
+            }
+            .customer-title {
+                font-size: 11px !important;
+                margin-bottom: 4px !important;
+            }
+            .customer-details {
+                font-size: 10px !important;
+                line-height: 1.2 !important;
+            }
+            .items-table { table-layout: fixed; }
+            .items-table th {
+                padding: 3px !important;
+                font-size: 8.5px !important;
+                line-height: 1.1 !important;
+            }
+            .items-table td {
+                padding: 2px 3px !important;
+                font-size: 8.5px !important;
+                line-height: 1.1 !important;
+            }
+            .items-table input {
+                padding: 0 !important;
+                font-size: 8.5px !important;
+                height: 18px !important;
+            }
+            .total-section {
+                padding: 8px 10px !important;
+                margin-bottom: 8px !important;
+            }
+            .total-row {
+                font-size: 11px !important;
+                padding: 3px 0 !important;
+            }
+            .grand-total {
+                font-size: 14px !important;
+                padding-top: 4px !important;
+                margin-top: 3px !important;
+            }
+            .signature-section {
+                margin-top: 10px !important;
+            }
+            .signature-line {
+                margin: 20px 15px 4px !important;
+            }
+            .signature-title {
+                font-size: 9px !important;
+            }
+            .signature-box div[style*="font-size: 36px"] {
+                font-size: 20px !important;
+            }
+            .signature-box div[style*="font-size: 12px"] {
+                font-size: 9px !important;
             }
         }
     </style>
@@ -394,16 +479,16 @@
                     <tbody id="items-body">
                         <tr>
                             <td><input type="text" class="item-code" value="1" placeholder="No."></td>
-                            <td><input type="text" class="item-detail" value="Product/Service Description" placeholder="Description"></td>
+                            <td><input type="text" class="item-detail" value="" placeholder="Description"></td>
                             <td><input type="number" class="item-qty" value="1" placeholder="Qty" onchange="calculateTotal()"></td>
-                            <td><input type="number" class="item-price" value="100" placeholder="Price" onchange="calculateTotal()"></td>
-                            <td><input type="text" class="item-total" value="RM100" readonly></td>
+                            <td><input type="number" class="item-price" value="0" placeholder="Price" onchange="calculateTotal()"></td>
+                            <td><input type="text" class="item-total" value="RM0.00" readonly></td>
                             <td class="action-column"><button class="btn-danger" onclick="removeRow(this)">×</button></td>
                         </tr>
                     </tbody>
                 </table>
 
-                <button class="btn" onclick="addRow()" style="margin-bottom: 20px;">+ Tambah Item</button>
+                <button class="btn add-item-btn" onclick="addRow()" style="margin-bottom: 20px;">+ Tambah Item</button>
 
                 <div class="total-section">
                     <div class="total-row">
@@ -482,20 +567,55 @@
         function removeRow(button) {
             const row = button.parentNode.parentNode;
             row.parentNode.removeChild(row);
+            renumberRows();
             calculateTotal();
         }
 
+        function renumberRows() {
+            const tbody = document.getElementById('items-body');
+            const rows = tbody.querySelectorAll('tr');
+            rows.forEach((row, index) => {
+                const codeInput = row.querySelector('.item-code');
+                if (codeInput) {
+                    codeInput.value = index + 1;
+                }
+            });
+        }
+
         function generatePDF() {
-            const element = document.getElementById('quotation-content');
-            const opt = {
-                margin: 10,
-                filename: `Quotation_Napoh_Jaya_${document.getElementById('quotation-date').value || 'draft'}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
+            // Hide buttons before generating PDF
+            const addBtn = document.querySelector('.add-item-btn');
+            const deleteButtons = document.querySelectorAll('.btn-danger');
+            const actionColumns = document.querySelectorAll('.action-column');
             
-            html2pdf().set(opt).from(element).save();
+            // Store original display values
+            const addBtnDisplay = addBtn ? addBtn.style.display : '';
+            const deleteBtnDisplays = Array.from(deleteButtons).map(btn => btn.style.display);
+            const actionColDisplays = Array.from(actionColumns).map(col => col.style.display);
+            
+            // Hide elements
+            if (addBtn) addBtn.style.display = 'none';
+            deleteButtons.forEach(btn => btn.style.display = 'none');
+            actionColumns.forEach(col => col.style.display = 'none');
+            
+            // Wait a bit to ensure styles are applied before generating PDF
+            setTimeout(() => {
+                const element = document.getElementById('quotation-content');
+                const opt = {
+                    margin: [5, 5, 5, 5],
+                    filename: `Quotation_Napoh_Jaya_${document.getElementById('quotation-date').value || 'draft'}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2 },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+                
+                html2pdf().set(opt).from(element).save().then(() => {
+                    // Restore original display values after PDF is generated
+                    if (addBtn) addBtn.style.display = addBtnDisplay;
+                    deleteButtons.forEach((btn, i) => btn.style.display = deleteBtnDisplays[i]);
+                    actionColumns.forEach((col, i) => col.style.display = actionColDisplays[i]);
+                });
+            }, 100);
         }
 
         // Calculate initial total

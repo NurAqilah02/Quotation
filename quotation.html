@@ -387,6 +387,11 @@
                 background: white;
                 padding: 0;
             }
+            /* Slight scale down to ensure 10 rows fit on one page */
+            #quotation-content {
+                transform: scale(0.92);
+                transform-origin: top left;
+            }
             .toolbar {
                 display: none;
             }
@@ -404,7 +409,7 @@
                 background: transparent !important;
                 padding: 8px 2px;
             }
-            .btn-remove, .btn-add {
+            .btn-remove, .btn-add, .add-item-btn, .action-column {
                 display: none !important;
             }
             .logo-upload-hint {
@@ -426,6 +431,72 @@
                 display: none !important;
             }
             .action-column {
+                display: none !important;
+            }
+            /* Compact layout to fit 10 rows on one page */
+            .header {
+                padding: 10px !important;
+            }
+            .company-name {
+                font-size: 20px !important;
+                margin-bottom: 3px !important;
+            }
+            .company-info {
+                padding: 8px 10px !important;
+                font-size: 9px !important;
+                line-height: 1.2 !important;
+            }
+            .content {
+                padding: 10px !important;
+            }
+            .quotation-date {
+                padding: 5px 10px !important;
+                margin-bottom: 8px !important;
+                font-size: 11px !important;
+            }
+            .customer-section {
+                padding: 8px !important;
+                margin-bottom: 8px !important;
+            }
+            .customer-title {
+                font-size: 11px !important;
+                margin-bottom: 4px !important;
+            }
+            .customer-details {
+                font-size: 10px !important;
+                line-height: 1.2 !important;
+            }
+            .items-table { table-layout: fixed; }
+            .items-table th {
+                padding: 3px !important;
+                font-size: 8.5px !important;
+                line-height: 1.1 !important;
+            }
+            .items-table td {
+                padding: 2px 3px !important;
+                font-size: 8.5px !important;
+                line-height: 1.1 !important;
+            }
+            .items-table input {
+                padding: 0 !important;
+                font-size: 8.5px !important;
+                height: 18px !important;
+            }
+            .total-section {
+                padding: 8px 10px !important;
+                margin-bottom: 8px !important;
+                font-size: 11px !important;
+            }
+            .signature-section {
+                margin-top: 10px !important;
+            }
+            .signature-line {
+                margin: 20px 15px 4px !important;
+            }
+            .signature-title {
+                font-size: 9px !important;
+            }
+            .company-nav {
                 display: none !important;
             }
         }
@@ -516,7 +587,7 @@
             <table class="items-table" id="items-table">
                 <thead>
                     <tr>
-                        <th style="width: 60px;">CODE</th>
+                        <th style="width: 60px;">NO</th>
                         <th>ITEM DETAIL</th>
                         <th style="width: 80px;">QTY</th>
                         <th style="width: 120px;">UNIT PRICE</th>
@@ -526,17 +597,17 @@
                 </thead>
                 <tbody id="items-body">
                     <tr>
-                        <td><input type="text" class="item-code" value="1" placeholder="Code"></td>
-                        <td><input type="text" class="item-detail" value="Book Case" placeholder="Item Detail"></td>
+                        <td><input type="text" class="item-code" value="1" placeholder="No"></td>
+                        <td><input type="text" class="item-detail" value="" placeholder="Item Detail"></td>
                         <td><input type="number" class="item-qty" value="1" placeholder="Qty" onchange="calculateTotal()"></td>
-                        <td><input type="number" class="item-price" value="550" placeholder="Price" onchange="calculateTotal()"></td>
-                        <td><input type="text" class="item-total" value="RM550" readonly></td>
+                        <td><input type="number" class="item-price" value="0" placeholder="Price" onchange="calculateTotal()"></td>
+                        <td><input type="text" class="item-total" value="RM0.00" readonly></td>
                         <td class="action-column"><button class="btn-remove" onclick="removeRow(this)">X</button></td>
                     </tr>
                 </tbody>
             </table>
 
-            <button class="btn" onclick="addNewRow()" style="margin-bottom: 20px;">+ Tambah Item</button>
+            <button class="btn add-item-btn" onclick="addNewRow()" style="margin-bottom: 20px;">+ Tambah Item</button>
 
             <div class="total-section">
                 TOTAL: <span id="grand-total">RM550</span>
@@ -601,10 +672,11 @@
 
         function addNewRow() {
             const tbody = document.getElementById('items-body');
+            const rowCount = tbody.rows.length + 1;
             const newRow = tbody.insertRow();
             
             newRow.innerHTML = `
-                <td><input type="text" class="item-code" placeholder="Code"></td>
+                <td><input type="text" class="item-code" value="${rowCount}" placeholder="No"></td>
                 <td><input type="text" class="item-detail" placeholder="Item Detail"></td>
                 <td><input type="number" class="item-qty" value="1" placeholder="Qty" onchange="calculateTotal()"></td>
                 <td><input type="number" class="item-price" value="0" placeholder="Price" onchange="calculateTotal()"></td>
@@ -618,7 +690,19 @@
         function removeRow(button) {
             const row = button.closest('tr');
             row.remove();
+            renumberRows();
             calculateTotal();
+        }
+
+        function renumberRows() {
+            const tbody = document.getElementById('items-body');
+            const rows = tbody.querySelectorAll('tr');
+            rows.forEach((row, index) => {
+                const codeInput = row.querySelector('.item-code');
+                if (codeInput) {
+                    codeInput.value = index + 1;
+                }
+            });
         }
 
         function calculateTotal() {
@@ -642,53 +726,75 @@
             const element = document.getElementById('quotation-content');
             element.classList.add('pdf-mode');
             
-            // Hide empty customer fields
-            const fieldsToHide = [];
-            const customerFields = [
-                { id: 'customer-name', rowId: 'customer-name-row' },
-                { id: 'customer-address1', rowId: 'customer-address1-row' },
-                { id: 'customer-address2', rowId: 'customer-address2-row' },
-                { id: 'customer-address3', rowId: 'customer-address3-row' },
-                { id: 'customer-address4', rowId: 'customer-address4-row' }
-            ];
+            // Hide buttons before generating PDF
+            const addBtn = document.querySelector('.add-item-btn');
+            const deleteButtons = document.querySelectorAll('.btn-remove');
+            const actionColumns = document.querySelectorAll('.action-column');
             
-            customerFields.forEach(field => {
-                const input = document.getElementById(field.id);
-                const row = document.getElementById(field.rowId);
-                if (input && row && !input.value.trim()) {
-                    row.style.display = 'none';
-                    fieldsToHide.push(row);
-                }
-            });
+            // Store original display values
+            const addBtnDisplay = addBtn ? addBtn.style.display : '';
+            const deleteBtnDisplays = Array.from(deleteButtons).map(btn => btn.style.display);
+            const actionColDisplays = Array.from(actionColumns).map(col => col.style.display);
             
-            // Hide entire customer section if all fields are empty
-            const allEmpty = customerFields.every(field => {
-                const input = document.getElementById(field.id);
-                return !input || !input.value.trim();
-            });
+            // Hide elements
+            if (addBtn) addBtn.style.display = 'none';
+            deleteButtons.forEach(btn => btn.style.display = 'none');
+            actionColumns.forEach(col => col.style.display = 'none');
             
-            const customerSection = document.querySelector('.customer-section');
-            if (allEmpty && customerSection) {
-                customerSection.style.display = 'none';
-                fieldsToHide.push(customerSection);
-            }
-            
-            const opt = {
-                margin: 10,
-                filename: `Quotation_Rakibah_Enterprise_${document.getElementById('quotation-date').value || 'draft'}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-
-            html2pdf().set(opt).from(element).save().then(() => {
-                // Remove PDF mode class after generation
-                element.classList.remove('pdf-mode');
-                // Restore hidden fields
-                fieldsToHide.forEach(row => {
-                    row.style.display = '';
+            // Wait a bit to ensure styles are applied before generating PDF
+            setTimeout(() => {
+                // Hide empty customer fields
+                const fieldsToHide = [];
+                const customerFields = [
+                    { id: 'customer-name', rowId: 'customer-name-row' },
+                    { id: 'customer-address1', rowId: 'customer-address1-row' },
+                    { id: 'customer-address2', rowId: 'customer-address2-row' },
+                    { id: 'customer-address3', rowId: 'customer-address3-row' },
+                    { id: 'customer-address4', rowId: 'customer-address4-row' }
+                ];
+                
+                customerFields.forEach(field => {
+                    const input = document.getElementById(field.id);
+                    const row = document.getElementById(field.rowId);
+                    if (input && row && !input.value.trim()) {
+                        row.style.display = 'none';
+                        fieldsToHide.push(row);
+                    }
                 });
-            });
+                
+                // Hide entire customer section if all fields are empty
+                const allEmpty = customerFields.every(field => {
+                    const input = document.getElementById(field.id);
+                    return !input || !input.value.trim();
+                });
+                
+                const customerSection = document.querySelector('.customer-section');
+                if (allEmpty && customerSection) {
+                    customerSection.style.display = 'none';
+                    fieldsToHide.push(customerSection);
+                }
+                
+                const opt = {
+                    margin: [5, 5, 5, 5],
+                    filename: `Quotation_Rakibah_Enterprise_${document.getElementById('quotation-date').value || 'draft'}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+
+                html2pdf().set(opt).from(element).save().then(() => {
+                    // Remove PDF mode class after generation
+                    element.classList.remove('pdf-mode');
+                    // Restore button displays
+                    if (addBtn) addBtn.style.display = addBtnDisplay;
+                    deleteButtons.forEach((btn, i) => btn.style.display = deleteBtnDisplays[i]);
+                    actionColumns.forEach((col, i) => col.style.display = actionColDisplays[i]);
+                    // Restore hidden fields
+                    fieldsToHide.forEach(row => {
+                        row.style.display = '';
+                    });
+                });
+            }, 100);
         }
 
         function saveData() {
@@ -775,7 +881,7 @@
                             const tbody = document.getElementById('items-body');
                             const newRow = tbody.insertRow();
                             newRow.innerHTML = `
-                                <td><input type="text" class="item-code" value="${item.code || ''}" placeholder="Code"></td>
+                                <td><input type="text" class="item-code" value="${item.code || ''}" placeholder="No"></td>
                                 <td><input type="text" class="item-detail" value="${item.detail || ''}" placeholder="Item Detail"></td>
                                 <td><input type="number" class="item-qty" value="${item.qty || 1}" placeholder="Qty" onchange="calculateTotal()"></td>
                                 <td><input type="number" class="item-price" value="${item.price || 0}" placeholder="Price" onchange="calculateTotal()"></td>
